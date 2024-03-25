@@ -1,9 +1,10 @@
-function flag = evalNavierStokesEqns3d(q, qx, qy, qz, qt, TOL)
-% Parameters
-gamma = 1.4;
+function flag = evalNavierStokesEqns3d(q, qx, qy, qz, qxx, qyy, qzz, qt, TOL)
+
+% Flow parameters
+global gamma mu Pr
 
 % Solutions and derivatives
-r = q(:,1);
+r = q(:,1); invr = 1./r;
 u = q(:,2);
 v = q(:,3);
 w = q(:,4);
@@ -26,6 +27,30 @@ uz = qz(:,2);
 vz = qz(:,3);
 wz = qz(:,4);
 pz = qz(:,5);
+
+rxx = qxx(:,1);
+uxx = qxx(:,2);
+uxy = qxx(:,3);
+uxz = qxx(:,4);
+uyy = qxx(:,5);
+uzz = qxx(:,6);
+pxx = qxx(:,7);
+
+ryy = qyy(:,1);
+vxx = qyy(:,2);
+vxy = qyy(:,3);
+vyy = qyy(:,4);
+vyz = qyy(:,5);
+vzz = qyy(:,6);
+pyy = qyy(:,7);
+
+rzz = qzz(:,1);
+wxx = qzz(:,2);
+wyy = qzz(:,3);
+wxz = qzz(:,4);
+wyz = qzz(:,5);
+wzz = qzz(:,6);
+pzz = qzz(:,7);
 
 rt = qt(:,1);
 ut = qt(:,2);
@@ -65,12 +90,41 @@ rhowHz = wz .* rH + w .* rHz;
 
 rEt = pt ./ (gamma - 1) + 0.5 * (rt .* (u .* u + v .* v + w .* w) + 2 * r .* (u .* ut + v .* vt + w .* wt));
 
+% Stokes' hypothesis
+lmbd = -2/3 * mu;
+
+% Viscous Stress tensor
+tau11 = 2 * mu * ux + lmbd * (ux + vy + wz);
+tau22 = 2 * mu * vy + lmbd * (ux + vy + wz);
+tau33 = 2 * mu * wz + lmbd * (ux + vy + wz);
+tau12 = mu * (uy + vx);       tau21 = tau12;
+tau13 = mu * (wx + uz);       tau31 = tau13;
+tau23 = mu * (vz + wy);       tau32 = tau23;
+tau11x = 2 * mu * uxx + lmbd * (uxx + vxy + wxz);
+tau22y = 2 * mu * vyy + lmbd * (uxy + vyy + wyz);
+tau33z = 2 * mu * wzz + lmbd * (uxz + vyz + wzz);
+tau12x = mu * (uxy + vxx); %tau21x = tau12x;
+tau12y = mu * (uyy + vxy); tau21y = tau12y;
+tau13x = mu * (wxx + uxz); %tau31x = tau13x;
+tau13z = mu * (wxz + uzz); tau31z = tau13z;
+tau23y = mu * (vyz + wyy); %tau32y = tau23y;
+tau23z = mu * (vzz + wyz); tau32z = tau23z;
+
+% Heat Fluxes
+q1x = gamma * mu /(Pr * (gamma-1)) * (-2.*invr.*invr.* rx.* px + invr.* pxx + p.*invr.*invr.*invr.* rx.* rx - p.*invr.*invr.* rxx);
+q2y = gamma * mu /(Pr * (gamma-1)) * (-2.*invr.*invr.* ry.* py + invr.* pyy + p.*invr.*invr.*invr.* ry.* ry - p.*invr.*invr.* ryy);
+q3z = gamma * mu /(Pr * (gamma-1)) * (-2.*invr.*invr.* rz.* pz + invr.* pzz + p.*invr.*invr.*invr.* rz.* rz - p.*invr.*invr.* rzz);
+
+tauU1x = u.* tau11x + v.* tau12x + w.* tau13x + tau11.* ux + tau12.* vx + tau13.* wx;
+tauU2y = u.* tau21y + v.* tau22y + w.* tau23y + tau21.* uy + tau22.* vy + tau23.* wy;
+tauU3z = u.* tau31z + v.* tau32z + w.* tau33z + tau31.* uz + tau32.* vz + tau33.* wz;
+
 % Form the 2D unsteady Euler equations
 equation(1) = sum(    rt +  rhoux +  rhovy + rhowz );
-equation(2) = sum( rhout + rhouux + rhouvy + rhouwz + px );
-equation(3) = sum( rhovt + rhouvx + rhovvy + rhovwz + py );
-equation(4) = sum( rhowt + rhouwx + rhowvy + rhowwz + pz );
-equation(5) = sum(   rEt + rhouHx + rhovHy + rhowHz );
+equation(2) = sum( rhout + rhouux + rhouvy + rhouwz + px - tau11x - tau12x - tau13x);
+equation(3) = sum( rhovt + rhouvx + rhovvy + rhovwz + py - tau21y - tau22y - tau23y);
+equation(4) = sum( rhowt + rhouwx + rhowvy + rhowwz + pz - tau31z - tau32z - tau33z);
+equation(5) = sum(   rEt + rhouHx + rhovHy + rhowHz - tauU1x - tauU2y - tauU3z + q1x + q2y + q3z);
 
 % Display the results. All must be zero.
 fprintf('\nSubstitution yields:\n\n');
