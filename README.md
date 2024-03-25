@@ -1,2 +1,2 @@
 # NavierStokesEqnsNd
-Collection of manufactured solutions of compressible Navier-Stokes equations
+Collection of manufactured solutions for the compressible Navier-Stokes equations.
