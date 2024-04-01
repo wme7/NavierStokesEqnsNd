@@ -1,87 +1,84 @@
-function flag = evalNavierStokesEqns2d(q, qx, qy, qxx, qyy, qt, TOL)
+function flag = evalNavierStokesEqns2d(q, qt, qx, qy, qxx, qyy, source, TOL)
 
 % Flow parameters
-global gamma mu Pr
+global gamma mu Pr %#ok<GVMIS>
 
 % Solutions and derivatives
-r = q(:,1); invr = 1./r;
-u = q(:,2);
-v = q(:,3);
-p = q(:,4);
+r=q(:,1); r_t=qt(:,1); r_x=qx(:,1); r_y=qy(:,1); r_xx=qxx(:,1);                r_yy=qyy(:,1);
+u=q(:,2); u_t=qt(:,2); u_x=qx(:,2); u_y=qy(:,2); u_xx=qxx(:,2); u_xy=qxx(:,3); u_yy=qxx(:,4);
+v=q(:,3); v_t=qt(:,3); v_x=qx(:,3); v_y=qy(:,3); v_xx=qyy(:,2); v_xy=qyy(:,3); v_yy=qyy(:,4);
+p=q(:,4); p_t=qt(:,4); p_x=qx(:,4); p_y=qy(:,4); p_xx=qxx(:,5);                p_yy=qyy(:,5);
 
-rx = qx(:,1);
-ux = qx(:,2);
-vx = qx(:,3);
-px = qx(:,4);
+% Auxiliary variables
+e = 1 / (gamma - 1) * (p ./ r);
+e_t = 1 / (gamma - 1) * (p_t .* r - p .* r_t) ./ r.^2;
+e_x = 1 / (gamma - 1) * (p_x .* r - p .* r_x) ./ r.^2;
+e_y = 1 / (gamma - 1) * (p_y .* r - p .* r_y) ./ r.^2;
+e_xx = 1 / (gamma - 1) * (p_xx .* r.^2 - r .* (2 .* p_x .* r_x + p .* r_xx) + 2 .* p .* r_x.^2) ./ r.^3;
+e_yy = 1 / (gamma - 1) * (p_yy .* r.^2 - r .* (2 .* p_y .* r_y + p .* r_yy) + 2 .* p .* r_y.^2) ./ r.^3;
 
-ry = qy(:,1);
-uy = qy(:,2);
-vy = qy(:,3);
-py = qy(:,4);
+E = e + (u.^2 + v.^2) / 2;
+E_t = e_t + u .* u_t + v .* v_t;
+E_x = e_x + u .* u_x + v .* v_x;
+E_y = e_y + u .* u_y + v .* v_y;
 
-rxx = qxx(:,1);
-uxx = qxx(:,2);
-uxy = qxx(:,3);
-uyy = qxx(:,4);
-pxx = qxx(:,5);
+% mu = constant
+mu_x = 0;
+mu_y = 0;
 
-ryy = qyy(:,1);
-vxx = qyy(:,2);
-vxy = qyy(:,3);
-vyy = qyy(:,4);
-pyy = qyy(:,5);
+% Assuming Stokes' Hypothesis
+lambda = -2/3 * mu;
+lambda_x = 0;
+lambda_y = 0;
 
-rt = qt(:,1);
-ut = qt(:,2);
-vt = qt(:,3);
-pt = qt(:,4);
+% Define heat flux
+% q_x = -(gamma / Pr) .* mu .* e_x;
+% q_y = -(gamma / Pr) .* mu .* e_y;
+q_xx = -(gamma / Pr) .* (mu_x .* e_x + mu .* e_xx);
+q_yy = -(gamma / Pr) .* (mu_y .* e_y + mu .* e_yy);
 
 % Compute some quantities needed to evaluate the 2D unsteady Euler system
-rhout = rt .* u + r .* ut;
-rhovt = rt .* v + r .* vt;
+ru_t = r_t .* u + r .* u_t;
+rv_t = r_t .* v + r .* v_t;
+ru_x = r_x .* u + r .* u_x;
+rv_y = r_y .* v + r .* v_y;
+rE_t = r_t .* E + r .* E_t;
+ruu_x = (r_x .* u .* u) + (r .* u_x .* u) + (r .* u .* u_x);
+ruv_x = (r_x .* u .* v) + (r .* u_x .* v) + (r .* u .* v_x);
+ruv_y = (r_y .* u .* v) + (r .* u_y .* v) + (r .* u .* v_y);
+rvv_y = (r_y .* v .* v) + (r .* v_y .* v) + (r .* v .* v_y);
+ruE_x = (r_x .* u .* E) + (r .* u_x .* E) + (r .* u .* E_x);
+rvE_y = (r_y .* v .* E) + (r .* v_y .* E) + (r .* v .* E_y);
 
-rhoux = rx .* u + r .* ux;
-rhovy = ry .* v + r .* vy;
+% Define stress tensor variables
+tauxx = 2 * mu .* u_x + lambda .* (u_x + v_y);
+tauyy = 2 * mu .* v_y + lambda .* (u_x + v_y);
+tauxy = mu .* (u_y + v_x);
 
-rhouux = rx .* u .* u + r .* ux .* u + r .* u .* ux;
-rhouvx = rx .* u .* v + r .* ux .* v + r .* u .* vx;
+tauxx_x = 2 .* mu_x .* u_x + 2 .* mu .* u_xx + lambda_x .* (u_x + v_y) + lambda .* (u_xx + v_xy);
+tauyy_y = 2 .* mu_y .* v_y + 2 .* mu .* v_yy + lambda_y .* (u_x + v_y) + lambda .* (u_xy + v_yy);
 
-rhouvy = ry .* u .* v + r .* uy .* v + r .* u .* vy;
-rhovvy = ry .* v .* v + r .* vy .* v + r .* v .* vy;
+tauxy_x = mu_x .* (u_y + v_x) + mu .* (u_xy + v_xx);
+tauxy_y = mu_y .* (u_y + v_x) + mu .* (u_yy + v_xy);
 
-rH  = gamma * p  ./ (gamma - 1) + 0.5 *  r .* (u .* u + v .* v);
-rHx = gamma * px ./ (gamma - 1) + 0.5 * (rx .* (u .* u + v .* v) + 2 * r .* (u .* ux + v .* vx));
-rHy = gamma * py ./ (gamma - 1) + 0.5 * (ry .* (u .* u + v .* v) + 2 * r .* (u .* uy + v .* vy));
+% Pressure x velocities
+pu_x = p_x .* u + p .* u_x;
+pv_y = p_y .* v + p .* v_y;
 
-rhouHx = ux .* rH + u .* rHx;
-rhovHy = vy .* rH + v .* rHy;
-
-rEt = pt ./ (gamma - 1) + 0.5 * (rt .* (u .* u + v .* v) + 2 * r .* (u .* ut + v .* vt));
-
-% Stokes' hypothesis
-lmbd = -2/3 * mu;
-
-% Viscous Stress tensor
-tau11 = 2 * mu * ux + lmbd * (ux + vy);
-tau22 = 2 * mu * vy + lmbd * (ux + vy);
-tau12 = mu * (uy + vx);  tau21 = tau12;
-tau11x = 2 * mu * uxx + lmbd * (uxx + vxy);
-tau22y = 2 * mu * vyy + lmbd * (uxy + vyy);
-tau12x = mu * (uxy + vxx); %tau21x = tau12x;
-tau12y = mu * (uyy + vxy); tau21y = tau12y;
-
-% Heat Fluxes
-q1x = gamma * mu /(Pr * (gamma-1)) * (-2*invr.*invr.* rx.* px + invr.* pxx + p.*invr.*invr.*invr.* rx.* rx - p.*invr.*invr.* rxx);
-q2y = gamma * mu /(Pr * (gamma-1)) * (-2*invr.*invr.* ry.* py + invr.* pyy + p.*invr.*invr.*invr.* ry.* ry - p.*invr.*invr.* ryy);
-
-tauU1x = u.* tau11x + v.* tau12x + tau11.* ux + tau12.* vx;
-tauU2y = u.* tau21y + v.* tau22y + tau21.* uy + tau22.* vy;
+% Tau components x velocities
+utauxx_x = u_x .* tauxx + u .* tauxx_x;
+vtauxy_x = v_x .* tauxy + v .* tauxy_x;
+utauxy_y = u_y .* tauxy + u .* tauxy_y;
+vtauyy_y = v_y .* tauyy + v .* tauyy_y;
 
 % Form the 2D unsteady Euler equations
-equation(1) = sum(    rt +  rhoux + rhovy );
-equation(2) = sum( rhout + rhouux + rhouvy + px - tau11x - tau12x);
-equation(3) = sum( rhovt + rhouvx + rhovvy + py - tau21y - tau22y);
-equation(4) = sum(   rEt + rhouHx + rhovHy - tauU1x - tauU2y + q1x + q2y);
+equation(1) = sum(  r_t +  ru_x + rv_y - source(:,1));
+equation(2) = sum( ru_t + ruu_x + ruv_y + p_x - (tauxx_x + tauxy_y) - source(:,2));
+equation(3) = sum( rv_t + ruv_x + rvv_y + p_y - (tauxy_x + tauyy_y) - source(:,3));
+equation(4) = sum( rE_t + ruE_x + rvE_y + pu_x + pv_y ...
+    - utauxx_x - vtauxy_x ...
+    - utauxy_y - vtauyy_y ...
+    + q_xx + q_yy - source(:,4));
 
 % Display the results. All must be zero.
 fprintf('\nSubstitution yields:\n\n');
@@ -91,7 +88,7 @@ fprintf('Y-momentum = %1.12f\n', equation(3));
 fprintf('Energy     = %1.12f\n', equation(4));
 
 % Output
-flag = all(equation < TOL);
+flag = any(equation < TOL);
 if (flag)
     fprintf('\n Is an exact solution!\n\n'); 
 else
