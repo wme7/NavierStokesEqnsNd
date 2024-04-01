@@ -1,6 +1,5 @@
 function [hr, hu, hv, hw, hp] = plotNavierStokesEqns3d(x,y,z,q,t)
     DIM = 3;
-    maxRho = max(q(:,1));
     colormap jet;
     L = max(x(:));
     subplot(231);
@@ -11,7 +10,7 @@ function [hr, hu, hv, hw, hp] = plotNavierStokesEqns3d(x,y,z,q,t)
         ylabel('$y$', Interpreter='latex');
         zlabel('$z$', Interpreter='latex');
         shading interp;
-        clim(maxRho + [-0.1,0.1]);
+        clim([0,2]);
         colorbar;
     subplot(232);
         hu = slice(x,y,z,reshape(q(:,2),size(z)),[0,L],[0,L],[0,L]);
@@ -51,6 +50,6 @@ function [hr, hu, hv, hw, hp] = plotNavierStokesEqns3d(x,y,z,q,t)
         ylabel('$y$', Interpreter='latex');
         zlabel('$z$', Interpreter='latex');
         shading interp;
-        clim([0,0.1 + maxRho]);
+        clim([0,2]);
         colorbar;
 end

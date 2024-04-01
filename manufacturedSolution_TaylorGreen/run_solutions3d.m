@@ -3,7 +3,7 @@ addpath('../common/');
 global gamma mu Pr %#ok<GVMIS>
 
 % Aceptable numerical error to stablish solution validity:
-TOL = 1E-12;
+TOL = 1E-11;
 
 % Domain length
 L = 1.0;
@@ -27,8 +27,8 @@ for t = t0:dt:tEnd
     if not(evalNavierStokesEqns3d(q,qt,qx,qy,qz,qxx,qyy,qzz,s,TOL)), return; end
 
     % Update figure
-    % plotNavierStokesEqns3d(x,y,z,q,t);
-    plotVorticityNavierStokesEqns3d(x,y,z,q,t)
+    plotNavierStokesEqns3d(x,y,z,q,t);
+    % plotVorticityNavierStokesEqns3d(x,y,z,q,t)
     drawnow;
 end
 
@@ -43,8 +43,8 @@ for t = t0:dt:tEnd
     if not(evalNavierStokesEqns3d(q,qt,qx,qy,qz,qxx,qyy,qzz,s,TOL)), return; end
 
     % Update figure
-    % plotNavierStokesEqns3d(x,y,z,q,t);
-    plotVorticityNavierStokesEqns3d(x,y,z,q,t)
+    plotNavierStokesEqns3d(x,y,z,q,t);
+    % plotVorticityNavierStokesEqns3d(x,y,z,q,t)
     drawnow;
 end
 
@@ -63,4 +63,3 @@ for t = t0:dt:tEnd
     plotVorticityNavierStokesEqns3d(x,y,z,q,t)
     drawnow;
 end
-

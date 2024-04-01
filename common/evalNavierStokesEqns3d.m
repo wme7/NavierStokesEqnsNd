@@ -6,8 +6,8 @@ global gamma mu Pr %#ok<GVMIS>
 % Solutions and derivatives
 r=q(:,1); r_t=qt(:,1); r_x=qx(:,1); r_y=qy(:,1); r_z=qz(:,1); r_xx=qxx(:,1);                               r_yy=qyy(:,1); r_zz=qzz(:,1);
 u=q(:,2); u_t=qt(:,2); u_x=qx(:,2); u_y=qy(:,2); u_z=qz(:,2); u_xx=qxx(:,2); u_xy=qxx(:,3); u_xz=qxx(:,4); u_yy=qxx(:,5); u_zz=qxx(:,6);
-v=q(:,3); v_t=qt(:,3); v_x=qx(:,3); v_y=qy(:,3); v_z=qz(:,3); v_xx=qyy(:,2); v_xy=qyy(:,3); v_yy=qyy(:,4); v_yz=qyy(:,5); v_zz=qyy(:,6);
-w=q(:,4); w_t=qt(:,4); w_x=qx(:,4); w_y=qy(:,4); w_z=qz(:,4); w_xx=qzz(:,2); w_xz=qzz(:,3); w_yy=qzz(:,4); w_yz=qzz(:,5); w_zz=qzz(:,6);
+v=q(:,3); v_t=qt(:,3); v_x=qx(:,3); v_y=qy(:,3); v_z=qz(:,3); v_xx=qyy(:,2); v_xy=qyy(:,3); v_yz=qyy(:,4); v_yy=qyy(:,5); v_zz=qyy(:,6);
+w=q(:,4); w_t=qt(:,4); w_x=qx(:,4); w_y=qy(:,4); w_z=qz(:,4); w_xx=qzz(:,2); w_xz=qzz(:,3); w_yz=qzz(:,4); w_yy=qzz(:,5); w_zz=qzz(:,6);
 p=q(:,5); p_t=qt(:,5); p_x=qx(:,5); p_y=qy(:,5); p_z=qz(:,5); p_xx=qxx(:,7);                               p_yy=qyy(:,7); p_zz=qzz(:,7);
 
 e = 1 / (gamma - 1) .* (p ./ r);
@@ -120,7 +120,7 @@ fprintf('Z-momentum = %1.12f\n', equation(4));
 fprintf('Energy     = %1.12f\n', equation(5));
 
 % Output
-flag = any(equation < TOL);
+flag = all(equation < TOL);
 if (flag)
     fprintf('\n Is an exact solution!\n\n'); 
 else

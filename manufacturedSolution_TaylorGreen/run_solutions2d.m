@@ -14,7 +14,7 @@ mu = 0.025;
 Pr = 0.72;
 
 % 2D - mesh
-[x,y] = meshgrid(linspace(0,L,25));
+[x,y] = meshgrid(linspace(0,L,25),linspace(-L/2,L/2,25));
 
 %% Compute Manufactured solution
 figure(1); t0=0; dt=0.05; tEnd=1;
@@ -27,8 +27,8 @@ for t = t0:dt:tEnd
     if not(evalNavierStokesEqns2d(q,qt,qx,qy,qxx,qyy,s,TOL)), return; end
 
     % Update figure
-    % plotNavierStokesEqns2d(x,y,q,t);
-    plotVorticityNavierStokesEqns2d(x,y,q,t);
+    plotNavierStokesEqns2d(x,y,q,t);
+    % plotVorticityNavierStokesEqns2d(x,y,q,t);
     drawnow;
 end
 

@@ -1,6 +1,5 @@
 function [hr, hu, hv, hp] = plotNavierStokesEqns2d(x,y,q,t)
     DIM = 2;
-    maxRho = max(q(:,1));
     colormap jet;
     subplot(221); 
         hr = surf(x,y,reshape(q(:,1),size(x)));
@@ -9,7 +8,7 @@ function [hr, hu, hv, hp] = plotNavierStokesEqns2d(x,y,q,t)
         xlabel('$x$', Interpreter='latex'); 
         ylabel('$y$', Interpreter='latex');
         shading interp;
-        clim(maxRho + [-0.1,0.1]);
+        clim([0,2]);
         colorbar;
     subplot(222); 
         hu = surf(x,y,reshape(q(:,2),size(x)));
@@ -36,6 +35,6 @@ function [hr, hu, hv, hp] = plotNavierStokesEqns2d(x,y,q,t)
         xlabel('$x$', Interpreter='latex'); 
         ylabel('$y$', Interpreter='latex');
         shading interp; 
-        clim(0.25 * maxRho * [-1,1]);
+        clim([0,2]);
         colorbar;
 end

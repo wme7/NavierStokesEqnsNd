@@ -88,7 +88,7 @@ fprintf('Y-momentum = %1.12f\n', equation(3));
 fprintf('Energy     = %1.12f\n', equation(4));
 
 % Output
-flag = any(equation < TOL);
+flag = all(equation < TOL);
 if (flag)
     fprintf('\n Is an exact solution!\n\n'); 
 else

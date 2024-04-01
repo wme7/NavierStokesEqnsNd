@@ -96,8 +96,8 @@ qx = [r_x, u_x, v_x, w_x, p_x];
 qy = [r_y, u_y, v_y, w_y, p_y];
 qz = [r_z, u_z, v_z, w_z, p_z];
 qxx = [r_xx, u_xx, u_xy, u_xz, u_yy, u_zz, p_xx];
-qyy = [r_yy, v_xx, v_xy, v_yy, v_yz, v_zz, p_yy];
-qzz = [r_zz, w_xx, w_xz, w_yy, w_yz, w_zz, p_zz];
+qyy = [r_yy, v_xx, v_xy, v_yz, v_yy, v_zz, p_yy];
+qzz = [r_zz, w_xx, w_xz, w_yz, w_yy, w_zz, p_zz];
 
 %% Source Terms
 Q_rho = zeros(size(x));
