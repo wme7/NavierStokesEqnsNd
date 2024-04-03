@@ -10,14 +10,14 @@ v=q(:,3); v_t=qt(:,3); v_x=qx(:,3); v_y=qy(:,3); v_z=qz(:,3); v_xx=qyy(:,2); v_x
 w=q(:,4); w_t=qt(:,4); w_x=qx(:,4); w_y=qy(:,4); w_z=qz(:,4); w_xx=qzz(:,2); w_xz=qzz(:,3); w_yz=qzz(:,4); w_yy=qzz(:,5); w_zz=qzz(:,6);
 p=q(:,5); p_t=qt(:,5); p_x=qx(:,5); p_y=qy(:,5); p_z=qz(:,5); p_xx=qxx(:,7);                               p_yy=qyy(:,7); p_zz=qzz(:,7);
 
-e = 1 / (gamma - 1) .* (p ./ r);
-e_t = 1 / (gamma - 1) .* (p_t .* r - p .* r_t) ./ r.^2;
-e_x = 1 / (gamma - 1) .* (p_x .* r - p .* r_x) ./ r.^2;
-e_y = 1 / (gamma - 1) .* (p_y .* r - p .* r_y) ./ r.^2;
-e_z = 1 / (gamma - 1) .* (p_z .* r - p .* r_z) ./ r.^2;
-e_xx = 1 / (gamma - 1) .* (p_xx .* r.^2 - r .* (2 .* p_x .* r_x + p .* r_xx) + 2 .* p .* r_x.^2) ./ r.^3;
-e_yy = 1 / (gamma - 1) .* (p_yy .* r.^2 - r .* (2 .* p_y .* r_y + p .* r_yy) + 2 .* p .* r_y.^2) ./ r.^3;
-e_zz = 1 / (gamma - 1) .* (p_zz .* r.^2 - r .* (2 .* p_z .* r_z + p .* r_zz) + 2 .* p .* r_z.^2) ./ r.^3;
+e = 1 ./ (gamma - 1) .* (p ./ r);
+e_t = 1 ./ (gamma - 1) .* (p_t .* r - p .* r_t) ./ r.^2;
+e_x = 1 ./ (gamma - 1) .* (p_x .* r - p .* r_x) ./ r.^2;
+e_y = 1 ./ (gamma - 1) .* (p_y .* r - p .* r_y) ./ r.^2;
+e_z = 1 ./ (gamma - 1) .* (p_z .* r - p .* r_z) ./ r.^2;
+e_xx = 1 ./ (gamma - 1) .* (p_xx .* r.^2 - r .* (2 .* p_x .* r_x + p .* r_xx) + 2 .* p .* r_x.^2) ./ r.^3;
+e_yy = 1 ./ (gamma - 1) .* (p_yy .* r.^2 - r .* (2 .* p_y .* r_y + p .* r_yy) + 2 .* p .* r_y.^2) ./ r.^3;
+e_zz = 1 ./ (gamma - 1) .* (p_zz .* r.^2 - r .* (2 .* p_z .* r_z + p .* r_zz) + 2 .* p .* r_z.^2) ./ r.^3;
 
 E = e + (u.^2 + v.^2 + w.^2) / 2;
 E_t = e_t + u .* u_t + v .* v_t + w .* w_t;
@@ -37,12 +37,12 @@ lambda_y = 0;
 lambda_z = 0;
 
 % Define heat flux
-% q_x = -(gamma / Pr) * mu .* e_x;
-% q_y = -(gamma / Pr) * mu .* e_y;
-% q_z = -(gamma / Pr) * mu .* e_z;
-q_xx = -(gamma / Pr) * (mu_x .* e_x + mu .* e_xx);
-q_yy = -(gamma / Pr) * (mu_y .* e_y + mu .* e_yy);
-q_zz = -(gamma / Pr) * (mu_z .* e_z + mu .* e_zz);
+% q_x = -(gamma / Pr) .* mu .* e_x;
+% q_y = -(gamma / Pr) .* mu .* e_y;
+% q_z = -(gamma / Pr) .* mu .* e_z;
+q_xx = -(gamma / Pr) .* (mu_x .* e_x + mu .* e_xx);
+q_yy = -(gamma / Pr) .* (mu_y .* e_y + mu .* e_yy);
+q_zz = -(gamma / Pr) .* (mu_z .* e_z + mu .* e_zz);
 
 % Compute some quantities needed to evaluate the 2D unsteady Euler system
 ru_t = r_t .* u + r .* u_t;
@@ -52,30 +52,30 @@ ru_x = r_x .* u + r .* u_x;
 rv_y = r_y .* v + r .* v_y;
 rw_z = r_z .* w + r .* w_z;
 rE_t = r_t .* E + r .* E_t;
-ruu_x = r_x .* u .* u + r .* u_x .* u + r .* u .* u_x;
-ruv_x = r_x .* v .* u + r .* v_x .* u + r .* v .* u_x;
-ruw_x = r_x .* w .* u + r .* w_x .* u + r .* w .* u_x;
-ruv_y = r_y .* u .* v + r .* u_y .* v + r .* u .* v_y;
-rvv_y = r_y .* v .* v + r .* v_y .* v + r .* v .* v_y;
-rwv_y = r_y .* w .* v + r .* w_y .* v + r .* w .* v_y;
-ruw_z = r_z .* u .* w + r .* u_z .* w + r .* u .* w_z;
-rvw_z = r_z .* v .* w + r .* v_z .* w + r .* v .* w_z;
-rww_z = r_z .* w .* w + r .* w_z .* w + r .* w .* w_z;
-ruE_x = r_x .* u .* E + r .* u_x .* E + r .* u .* E_x;
-rvE_y = r_y .* v .* E + r .* v_y .* E + r .* v .* E_y;
-rwE_z = r_z .* w .* E + r .* w_z .* E + r .* w .* E_z;
+ruu_x = (r_x .* u .* u) + (r .* u_x .* u) + (r .* u .* u_x);
+ruv_x = (r_x .* u .* v) + (r .* u_x .* v) + (r .* u .* v_x);
+ruw_x = (r_x .* w .* u) + (r .* w_x .* u) + (r .* w .* u_x);
+ruv_y = (r_y .* u .* v) + (r .* u_y .* v) + (r .* u .* v_y);
+rvv_y = (r_y .* v .* v) + (r .* v_y .* v) + (r .* v .* v_y);
+rwv_y = (r_y .* w .* v) + (r .* w_y .* v) + (r .* w .* v_y);
+ruw_z = (r_z .* u .* w) + (r .* u_z .* w) + (r .* u .* w_z);
+rvw_z = (r_z .* v .* w) + (r .* v_z .* w) + (r .* v .* w_z);
+rww_z = (r_z .* w .* w) + (r .* w_z .* w) + (r .* w .* w_z);
+ruE_x = (r_x .* u .* E) + (r .* u_x .* E) + (r .* u .* E_x);
+rvE_y = (r_y .* v .* E) + (r .* v_y .* E) + (r .* v .* E_y);
+rwE_z = (r_z .* w .* E) + (r .* w_z .* E) + (r .* w .* E_z);
 
 % Define stress tensor variables
-tauxx = 2 * mu .* u_x + lambda .* (u_x + v_y + w_z);
-tauyy = 2 * mu .* v_y + lambda .* (u_x + v_y + w_z);
-tauzz = 2 * mu .* w_z + lambda .* (u_x + v_y + w_z);
+tauxx = 2 .* mu .* u_x + lambda .* (u_x + v_y + w_z);
+tauyy = 2 .* mu .* v_y + lambda .* (u_x + v_y + w_z);
+tauzz = 2 .* mu .* w_z + lambda .* (u_x + v_y + w_z);
 tauxy = mu .* (u_y + v_x);
 tauxz = mu .* (u_z + w_x);
 tauyz = mu .* (v_z + w_y);
 
-tauxx_x = 2 * mu_x .* u_x + 2 * mu .* u_xx + lambda_x .* (u_x + v_y + w_z) + lambda .* (u_xx + v_xy + w_xz);
-tauyy_y = 2 * mu_y .* v_y + 2 * mu .* v_yy + lambda_y .* (u_x + v_y + w_z) + lambda .* (u_xy + v_yy + w_yz);
-tauzz_z = 2 * mu_z .* w_z + 2 * mu .* w_zz + lambda_z .* (u_x + v_y + w_z) + lambda .* (u_xz + v_yz + w_zz);
+tauxx_x = 2 .* mu_x .* u_x + 2 .* mu .* u_xx + lambda_x .* (u_x + v_y + w_z) + lambda .* (u_xx + v_xy + w_xz);
+tauyy_y = 2 .* mu_y .* v_y + 2 .* mu .* v_yy + lambda_y .* (u_x + v_y + w_z) + lambda .* (u_xy + v_yy + w_yz);
+tauzz_z = 2 .* mu_z .* w_z + 2 .* mu .* w_zz + lambda_z .* (u_x + v_y + w_z) + lambda .* (u_xz + v_yz + w_zz);
 
 tauxy_x = mu_x .* (u_y + v_x) + mu .* (u_xy + v_xx);
 tauxy_y = mu_y .* (u_y + v_x) + mu .* (u_yy + v_xy);
@@ -101,10 +101,10 @@ vtauyz_z = v_z .* tauyz + v .* tauyz_z;
 wtauzz_z = w_z .* tauzz + w .* tauzz_z;
 
 % Form the 2D unsteady Euler equations
-equation(1) = sum(  r_t + ru_x  + rv_y  + rw_z  - source(:,1));
-equation(2) = sum( ru_t + ruu_x + ruv_y + ruw_z + p_x - tauxx_x - tauxy_y - tauxz_z - source(:,2));
-equation(3) = sum( rv_t + ruv_x + rvv_y + rvw_z + p_y - tauxy_x - tauyy_y - tauyz_z - source(:,3));
-equation(4) = sum( rw_t + ruw_x + rwv_y + rww_z + p_z - tauxz_x - tauyz_y - tauzz_z - source(:,4));
+equation(1) = sum(  r_t +  ru_x +  rv_y +  rw_z  - source(:,1));
+equation(2) = sum( ru_t + ruu_x + ruv_y + ruw_z + p_x - (tauxx_x + tauxy_y + tauxz_z) - source(:,2));
+equation(3) = sum( rv_t + ruv_x + rvv_y + rvw_z + p_y - (tauxy_x + tauyy_y + tauyz_z) - source(:,3));
+equation(4) = sum( rw_t + ruw_x + rwv_y + rww_z + p_z - (tauxz_x + tauyz_y + tauzz_z) - source(:,4));
 equation(5) = sum( rE_t + ruE_x + rvE_y + rwE_z + pu_x + pv_y + pw_z ...
     - utauxx_x - vtauxy_x - wtauxz_x ...
     - utauxy_y - vtauyy_y - wtauyz_y ...

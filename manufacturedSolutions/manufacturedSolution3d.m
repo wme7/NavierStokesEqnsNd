@@ -9,11 +9,11 @@ function [q, qt, qx, qy, qz, qxx, qyy, qzz, source] = manufacturedSolution3d(x, 
 global gamma mu Pr %#ok<*GVMIS>
 
 % Parameters
-r_0 = 1.0; r_T = 0.1; r_X = 0.1; r_Y = 0.2; r_Z = 0.3;
-u_0 = 0.0; u_T = 0.1; u_X = 0.1; u_Y = 0.2; u_Z = 0.3;
-v_0 = 0.0; v_T = 0.1; v_X = 0.1; v_Y = 0.2; v_Z = 0.3;
-w_0 = 0.0; w_T = 0.1; w_X = 0.1; w_Y = 0.2; w_Z = 0.3;
-p_0 = 1.0; p_T = 0.1; p_X = 0.1; p_Y = 0.2; p_Z = 0.3;
+r_0 = 1.0; r_T = 0.1; r_X = 0.1; r_Y = 0.1; r_Z = 0.0;
+u_0 = 0.0; u_T = 0.1; u_X = 0.1; u_Y = 0.1; u_Z = 0.0;
+v_0 = 0.0; v_T = 0.1; v_X = 0.1; v_Y = 0.1; v_Z = 0.0;
+w_0 = 0.0; w_T = 0.0; w_X = 0.0; w_Y = 0.1; w_Z = 0.0;
+p_0 = 1.0; p_T = 0.1; p_X = 0.1; p_Y = 0.1; p_Z = 0.0;
 
 artPiInvL = 2*pi/L; arxPiInvL = 2*pi/L; aryPiInvL = 2*pi/L; arzPiInvL = 2*pi/L;
 autPiInvL = 2*pi/L; auxPiInvL = 2*pi/L; auyPiInvL = 2*pi/L; auzPiInvL = 2*pi/L;

@@ -27,7 +27,8 @@ for t = t0:dt:tEnd
     if not(evalNavierStokesEqns2d(q,qt,qx,qy,qxx,qyy,s,TOL)), return; end
 
     % Update figure
-    plotNavierStokesEqns2d(x,y,q,t);
+    mesh(x,y,reshape(q(:,4),size(x))); axis square; zlim([0,2]);
+    % plotNavierStokesEqns2d(x,y,q,t);
     % plotVorticityNavierStokesEqns2d(x,y,q,t);
     drawnow;
 end

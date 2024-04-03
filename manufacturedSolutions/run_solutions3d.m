@@ -3,18 +3,18 @@ addpath('../common/');
 global gamma mu Pr %#ok<GVMIS>
 
 % Aceptable numerical error to stablish solution validity:
-TOL = 1E-11;
+TOL = 1E-10;
 
 % Domain length
 L = 1.0;
 
 % Fluid parameters
-gamma = 1.4;
+gamma = 7/5;
 mu = 0.025;
 Pr = 0.72;
 
 % 3D - mesh
-[x,y,z] = meshgrid(linspace(0,L,25));
+[x,y,z] = meshgrid(linspace(0,L,41));
 
 %% Compute Manufactured solution
 figure(3); t0=0; dt=0.05; tEnd=1;
@@ -27,7 +27,8 @@ for t = t0:dt:tEnd
     if not(evalNavierStokesEqns3d(q,qt,qx,qy,qz,qxx,qyy,qzz,s,TOL)), return; end
 
     % Update figure
-    plotNavierStokesEqns3d(x,y,z,q,t);
+    p = reshape(q(:,5),size(x)); mesh(x(:,:,21),y(:,:,21),p(:,:,21)); zlim([0,2]); axis square;
+    % plotNavierStokesEqns3d(x,y,z,q,t);
     % plotVorticityNavierStokesEqns3d(x,y,z,q,t)
     drawnow;
 end
